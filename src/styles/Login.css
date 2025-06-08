@@ -1,0 +1,279 @@
+/* Reset & base styles */
+
+
+/* Login container with background image and overlay */
+.login-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  gap: 30px;
+  padding: 20px;
+
+  /* Background image */
+  background-image: url('../images/bg.jpg'); /* Replace with your actual path */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  z-index: 0; /* base */
+
+  overflow: hidden;
+}
+
+/* Dark overlay on login-container for readability */
+.login-container::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6); /* adjust darkness */
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Content inside login-container should be above overlay */
+.login-container > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Info Section */
+.info-section {
+  max-width: 400px;
+  text-align: center;
+}
+
+.info-section h1 {
+  font-size: 2rem;
+  color: #ff5a5f;
+  margin-bottom: 1rem;
+}
+
+.info-section p {
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.info-section .info-image {
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+}
+
+/* Form Section */
+.form-section {
+  max-width: 400px;
+}
+
+.login-form {
+  background: rgba(26, 26, 26, 0.95);
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6);
+  text-align: center;
+}
+
+.login-form h2 {
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  color: #ff5a5f;
+  text-transform: uppercase;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  border-radius: 5px;
+  background: rgba(26, 26, 26, 0.95);
+}
+
+.input-group .icon {
+  padding: 0.8rem;
+  color: #ff5a5f;
+  font-size: 1.2rem;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 0.8rem;
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.input-group input:focus {
+  outline: none;
+  background: rgba(26, 26, 26, 0.95);
+}
+
+.btn-submit {
+  width: 100%;
+  padding: 0.8rem;
+  background: linear-gradient(90deg, #ff5a5f, #fc5869);
+  color: white;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.btn-submit:hover {
+  background: linear-gradient(90deg, #fc5869, #ff5a5f);
+  transform: scale(1.05);
+}
+
+.extra-links {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.extra-links a {
+  color: #ff5a5f;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.extra-links a:hover {
+  color: #fc5869;
+}
+
+.message {
+  margin-bottom: 15px;
+  padding: 12px;
+  border-radius: 4px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.message.error {
+  background-color: #f8d7da;
+  color: #842029;
+  border: 1px solid #f5c2c7;
+}
+
+.message.success {
+  background-color: #d1e7dd;
+  color: #0f5132;
+  border: 1px solid #badbcc;
+}
+
+/* Enhanced Forgot Password Modal Overlay */
+/* ...existing code... */
+
+/* Forgot Password Modal Overlay */
+.forgot-modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+/* Forgot Password Modal Content */
+.forgot-content {
+  background: rgba(26, 26, 26, 0.98);
+  color: #fff;
+  border-radius: 12px;
+  padding: 2rem 2rem 1.5rem 2rem;
+  min-width: 320px;
+  max-width: 400px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.7);
+  position: relative;
+  text-align: center;
+}
+
+.forgot-content h3 {
+  color: #ff5a5f;
+  margin-bottom: 1.5rem;
+  font-size: 1.4rem;
+  text-transform: uppercase;
+}
+
+.forgot-content input[type="email"],
+.forgot-content input[type="text"],
+.forgot-content input[type="password"] {
+  width: 100%;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border: none;
+  border-radius: 5px;
+  background: rgba(26, 26, 26, 0.95);
+  color: #fff;
+  font-size: 1rem;
+}
+
+.forgot-content input:focus {
+  outline: none;
+  background: rgba(26, 26, 26, 1);
+}
+
+.forgot-content button[type="submit"],
+.forgot-content .close-btn {
+  width: 100%;
+  padding: 0.8rem;
+  background: linear-gradient(90deg, #ff5a5f, #fc5869);
+  color: white;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.forgot-content button[type="submit"]:hover,
+.forgot-content .close-btn:hover {
+  background: linear-gradient(90deg, #fc5869, #ff5a5f);
+  transform: scale(1.04);
+}
+
+.forgot-content .close-btn {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  width: auto;
+  padding: 0;
+  background: none;
+  color: #ff5a5f;
+  font-size: 1.7rem;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.forgot-content .close-btn:hover {
+  color: #fc5869;
+  background: none;
+  transform: none;
+}
+
+.forgot-message {
+  margin-top: 1rem;
+  padding: 12px;
+  border-radius: 4px;
+  font-weight: 600;
+  text-align: center;
+  background-color: #f8d7da;
+  color: #842029;
+  border: 1px solid #f5c2c7;
+}
+
+.forgot-message.success {
+  background-color: #d1e7dd;
+  color: #0f5132;
+  border: 1px solid #badbcc;
+}
+
+/* ...existing code... */

@@ -1,0 +1,176 @@
+/* Reset and base styles */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: url('../images/bg.jpg') no-repeat center center fixed;
+  background-size: cover;
+  color: #fff;
+  overflow-x: hidden;
+}
+.dashboard-actions {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.dashboard-actions h2 {
+  font-size: 2rem;
+  color: #ffffff;
+  margin-bottom: 25px;
+  text-shadow: 0 0 10px #fc5869;
+}
+
+.actions-grid {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.dashboard-btn {
+  background: linear-gradient(135deg, #ff5a5f, #fc5869);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 25px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 5px 15px rgba(255, 90, 95, 0.4);
+}
+
+.dashboard-btn:hover {
+  background: linear-gradient(135deg, #fc5869, #ff5a5f);
+  transform: scale(1.08);
+  box-shadow: 0 8px 20px rgba(255, 90, 95, 0.6);
+}
+
+.btn-icon {
+  font-size: 1.3rem;
+}
+
+
+
+/* Admin Home Container */
+.admin-home {
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: auto;
+  animation: fadeIn 1.2s ease;
+}
+
+/* Header */
+.admin-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.admin-header h1 {
+  font-size: 3rem;
+  color: #ffffff;
+  text-shadow: 0 0 10px #ff5a5f;
+  animation: slideInDown 0.8s ease;
+}
+
+/* Stats Section */
+.admin-stats {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 30px;
+  margin-bottom: 50px;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  border-radius: 15px;
+  width: 260px;
+  padding: 30px 20px;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+}
+
+.stat-card .icon {
+  font-size: 3rem;
+  color: #ff5a5f;
+  margin-bottom: 15px;
+}
+
+.stat-card h2 {
+  font-size: 2.2rem;
+  margin: 10px 0;
+}
+
+.stat-card p {
+  font-size: 1rem;
+  color: #e0e0e0;
+}
+
+/* Actions Section */
+.admin-actions {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.admin-actions h2 {
+  font-size: 2rem;
+  color: #ffffff;
+  margin-bottom: 25px;
+  text-shadow: 0 0 10px #fc5869;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.action-btn {
+  background: linear-gradient(135deg, #ff5a5f, #fc5869);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 25px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 5px 15px rgba(255, 90, 95, 0.4);
+}
+
+.action-btn:hover {
+  background: linear-gradient(135deg, #fc5869, #ff5a5f);
+  transform: scale(1.08);
+  box-shadow: 0 8px 20px rgba(255, 90, 95, 0.6);
+}
+
+.action-btn .icon {
+  font-size: 1.3rem;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInDown {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
