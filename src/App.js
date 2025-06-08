@@ -10,7 +10,7 @@ import ManageMovies from './components/ManageMovies';
 import MovieDetails from './components/MovieDetails';
 // ...existing code...
 import ManageReviews from './components/ManageReviews';
-import Admin_analytics from './components/Admin_analytics'; // <-- Corrected path
+import AdminAnalytics from './components/Admin_analytics'; // <-- Corrected path
 // ...existing code...
 function App() {
     return (
@@ -25,7 +25,7 @@ function App() {
                 <Route path="/ManageMovies" element={<ManageMovies />} />
                 <Route path="/movies/:id" element={<MovieDetails />} />
                 <Route path="/ManageReviews" element={<ManageReviews />} />
-                <Route path="/Admin_analytics" element={<Admin_analytics />} />
+                <Route path="/Admin_analytics" element={<AdminAnalytics />} />
             </Routes>
         </Router>
     );

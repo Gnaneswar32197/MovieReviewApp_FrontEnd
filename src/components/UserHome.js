@@ -29,6 +29,7 @@ const UserHome = () => {
   const [editData, setEditData] = useState({ firstName: '', lastName: '', email: '', phone: '' });
   const [showcase, setShowcase] = useState('all');
   const navigate = useNavigate();
+  
 
   useEffect(() => {
     // Fetch user info
@@ -201,11 +202,12 @@ const UserHome = () => {
   };
 
   // --- Comment Features ---
-  const openCommentModal = (review) => {
-    setCommentModal({ open: true, review });
-    setCommentText('');
-    setCommentMsg('');
-  };
+  // const openCommentModal = (review) => {
+  //   setCommentModal({ open: true, review });
+  //   setCommentText('');
+  //   setCommentMsg('');
+  // };
+  
 
   const submitComment = async (e) => {
     e.preventDefault();

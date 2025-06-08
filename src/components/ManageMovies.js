@@ -1,3 +1,4 @@
+
 // import React, { useState, useEffect } from 'react';
 // import axios from 'axios';
 // import { FaPlus, FaEdit, FaTrash, FaTimes, FaPlay, FaArrowLeft } from 'react-icons/fa';
@@ -17,16 +18,17 @@
 //     director: '',
 //     actor: '',
 //     actress: '',
-//     releaseDate: '', // Use ISO date string
+//     releaseDate: '',
 //     rating: '',
 //     duration: '',
 //     posterUrl: '',
 //     genres: [],
 //     description: '',
 //     active: false,
+//     category: '',
+//     episodes: '',
 //   });
 
-//   // Fetch movies from API
 //   useEffect(() => {
 //     fetchMovies();
 //   }, []);
@@ -59,6 +61,8 @@
 //       genres: [],
 //       description: '',
 //       active: false,
+//       category: '',
+//       episodes: '',
 //     });
 //   };
 
@@ -78,6 +82,8 @@
 //       genres: [],
 //       description: '',
 //       active: false,
+//       category: '',
+//       episodes: '',
 //     });
 //   };
 
@@ -92,19 +98,25 @@
 //       }));
 //     } else if (type === 'checkbox') {
 //       setFormData((prev) => ({ ...prev, [name]: checked }));
+//     } else if (name === 'episodes') {
+//       setFormData((prev) => ({ ...prev, episodes: value.replace(/\D/, '') }));
 //     } else {
 //       setFormData((prev) => ({ ...prev, [name]: value }));
 //     }
 //   };
 
-//   // Add or Edit movie
 //   const handleAddMovieSubmit = async (e) => {
 //     e.preventDefault();
 //     try {
+//       const submitData = { ...formData };
+//       // Remove episodes if not Anime or Webseries
+//       if (submitData.category !== 'Anime' && submitData.category !== 'Webseries') {
+//         delete submitData.episodes;
+//       }
 //       if (isEdit && editId) {
-//         await axios.put(`${API_BASE_URL}/api/movies/${editId}`, formData);
+//         await axios.put(`${API_BASE_URL}/api/movies/${editId}`, submitData);
 //       } else {
-//         await axios.post(`${API_BASE_URL}/api/movies`, formData);
+//         await axios.post(`${API_BASE_URL}/api/movies`, submitData);
 //       }
 //       closeModal();
 //       fetchMovies();
@@ -113,13 +125,11 @@
 //     }
 //   };
 
-//   // Show delete confirmation popup
 //   const handleDeleteMovie = (movieId) => {
 //     setDeleteId(movieId);
 //     setShowDeletePopup(true);
 //   };
 
-//   // Confirm delete
 //   const confirmDeleteMovie = async () => {
 //     try {
 //       await axios.delete(`${API_BASE_URL}/api/movies/${deleteId}`);
@@ -132,13 +142,11 @@
 //     }
 //   };
 
-//   // Cancel delete
 //   const cancelDelete = () => {
 //     setShowDeletePopup(false);
 //     setDeleteId(null);
 //   };
 
-//   // Edit movie
 //   const handleEditMovie = (movieId) => {
 //     const movie = movies.find((m) => m._id === movieId);
 //     if (movie) {
@@ -149,13 +157,15 @@
 //         director: movie.director || '',
 //         actor: movie.actor || '',
 //         actress: movie.actress || '',
-//         releaseDate: movie.releaseDate ? movie.releaseDate.slice(0, 10) : '', // YYYY-MM-DD
+//         releaseDate: movie.releaseDate ? movie.releaseDate.slice(0, 10) : '',
 //         rating: movie.rating || '',
 //         duration: movie.duration || '',
 //         posterUrl: movie.posterUrl || '',
 //         genres: movie.genres || [],
 //         description: movie.description || '',
 //         active: movie.active || false,
+//         category: movie.category || '',
+//         episodes: movie.episodes || '',
 //       });
 //       setShowModal(true);
 //     }
@@ -205,73 +215,96 @@
 //               <div className="table-container">
 //                 <table className="movies-table">
 //                   <thead>
-//   <tr>
-//     <th>#</th>
-//     <th>Poster</th>
-//     <th>Title</th>
-//     <th>Director</th>
-//     <th>Actor</th>
-//     <th>Actress</th>
-//     <th>Genre</th>
-//     <th>Release Date</th>
-//     <th>Rating</th>
-//     <th>Duration</th>
-//     <th>Actions</th>
-//   </tr>
-// </thead>
-// <tbody>
-//   {movies.map((movie, index) => (
-//     <tr key={movie._id}>
-//       <td>{index + 1}</td>
-//       <td>
-//         {movie.posterUrl ? (
-//           <img
-//             src={movie.posterUrl}
-//             alt={movie.title}
-//             style={{ width: '60px', height: '90px', objectFit: 'cover', borderRadius: '6px' }}
-//           />
-//         ) : (
-//           <span style={{ color: '#aaa' }}>No Image</span>
-//         )}
-//       </td>
-//       <td className="movie-title">{movie.title}</td>
-//       <td>{movie.director}</td>
-//       <td>{movie.actor}</td>
-//       <td>{movie.actress}</td>
-//       <td>
-//         <span className="genre-badge">
-//           {Array.isArray(movie.genres) ? movie.genres.join(', ') : movie.genre}
-//         </span>
-//       </td>
-//       <td>
-//         {movie.releaseDate
-//           ? new Date(movie.releaseDate).toLocaleDateString()
-//           : ''}
-//       </td>
-//       <td>
-//         <span className="rating-badge">{movie.rating}/10</span>
-//       </td>
-//       <td>{movie.duration} min</td>
-//       <td>
-//         <div className="action-buttons">
-//           <button className="edit-btn" onClick={() => handleEditMovie(movie._id)}>
-//             <FaEdit />
-//           </button>
-//           <button className="delete-btn" onClick={() => handleDeleteMovie(movie._id)}>
-//             <FaTrash />
-//           </button>
-//         </div>
-//       </td>
-//     </tr>
-//   ))}
-// </tbody>
+//                     <tr>
+//                       <th>#</th>
+//                       <th>Poster</th>
+//                       <th>Title</th>
+//                       <th>Director</th>
+//                       <th>Actor</th>
+//                       <th>Actress</th>
+//                       <th>Genre</th>
+//                       <th>Category</th>
+//                       <th>Episodes</th>
+//                       <th>Release Date</th>
+//                       <th>Rating</th>
+//                       <th>Duration</th>
+//                       <th>Actions</th>
+//                     </tr>
+//                   </thead>
+//                   <tbody>
+//                     {movies.map((movie, index) => (
+//                       <tr key={movie._id}>
+//                         <td>{index + 1}</td>
+//                         <td>
+//                           {movie.posterUrl ? (
+//                             <img
+//                               src={movie.posterUrl}
+//                               alt={movie.title}
+//                               style={{ width: '60px', height: '90px', objectFit: 'cover', borderRadius: '6px' }}
+//                             />
+//                           ) : (
+//                             <span style={{ color: '#aaa' }}>No Image</span>
+//                           )}
+//                         </td>
+//                         <td className="movie-title">{movie.title}</td>
+//                         <td>{movie.director}</td>
+//                         <td>{movie.actor}</td>
+//                         <td>{movie.actress}</td>
+//                         <td>
+//                           <span className="genre-badge">
+//                             {Array.isArray(movie.genres) ? movie.genres.join(', ') : movie.genre}
+//                           </span>
+//                         </td>
+//                         <td>{movie.category || '-'}</td>
+//                         <td>{(movie.category === 'Anime' || movie.category === 'Webseries') ? movie.episodes : '-'}</td>
+//                         <td>
+//                           {movie.releaseDate
+//                             ? new Date(movie.releaseDate).toLocaleDateString()
+//                             : ''}
+//                         </td>
+//                         <td>
+//                           <span className="rating-badge">{movie.rating}/10</span>
+//                         </td>
+//                         <td>{movie.duration} min</td>
+//                         <td>
+//                           <div className="action-buttons">
+//                             <button className="edit-btn" onClick={() => handleEditMovie(movie._id)}>
+//                               <FaEdit />
+//                             </button>
+//                             <button className="delete-btn" onClick={() => handleDeleteMovie(movie._id)}>
+//                               <FaTrash />
+//                             </button>
+//                           </div>
+//                         </td>
+//                       </tr>
+//                     ))}
+//                   </tbody>
 //                 </table>
 //               </div>
 //             )}
 //           </div>
 //         </div>
 //       </main>
+//       // ...existing code...
 
+//       {/* Delete Confirmation Popup */}
+//       {showDeletePopup && (
+//         <div className="modal-overlay">
+//           <div className="modal-container" style={{ maxWidth: 400, textAlign: 'center', padding: '2rem' }}>
+//             <h3>Are you sure you want to delete this movie?</h3>
+//             <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+//               <button className="submit-btn" onClick={confirmDeleteMovie}>
+//                 Yes, Delete
+//               </button>
+//               <button className="cancel-btn" onClick={cancelDelete}>
+//                 Cancel
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+      
 //       {/* Modal */}
 //       {showModal && (
 //         <div className="modal-overlay">
@@ -333,11 +366,44 @@
 //                   <label htmlFor="posterUrl">Poster URL</label>
 //                   <input type="url" id="posterUrl" name="posterUrl" value={formData.posterUrl} onChange={handleInputChange} />
 //                 </div>
+//                 <div className="form-group">
+//                   <label htmlFor="category">Category</label>
+//                   <select
+//                     id="category"
+//                     name="category"
+//                     value={formData.category}
+//                     onChange={handleInputChange}
+//                     required
+//                   >
+//                     <option value="">Select Category</option>
+//                     <option value="Hollywood">Hollywood</option>
+//                     <option value="Bollywood">Bollywood</option>
+//                     <option value="Tollywood">Tollywood</option>
+//                     <option value="Kollywood">Kollywood</option>
+//                     <option value="Anime">Anime</option>
+//                     <option value="Webseries">Webseries</option>
+//                     <option value="Sandlewood">Sandlewood</option>
+//                   </select>
+//                 </div>
+//                 {(formData.category === 'Anime' || formData.category === 'Webseries') && (
+//                   <div className="form-group">
+//                     <label htmlFor="episodes">Number of Episodes</label>
+//                     <input
+//                       type="number"
+//                       id="episodes"
+//                       name="episodes"
+//                       min="1"
+//                       value={formData.episodes}
+//                       onChange={handleInputChange}
+//                       required
+//                     />
+//                   </div>
+//                 )}
 //               </div>
 //               <div className="form-group full-width">
 //                 <label>Genres</label>
 //                 <div className="genres-grid">
-//                   {["Action", "Adventure", "Animation", "Comedy", "Crime", "Documentary", "Drama", "Family", "Fantasy", "Horror", "Mystery", "Romance", "Sci-Fi", "Thriller", "Western"].map((genre) => (
+//                   {["Action", "Adventure", "Animation", "Comedy", "Crime", "Documentary", "Drama", "Family", "Fantasy", "Horror", "Mystery", "Romance", "Sci-Fi", "Thriller","Sports", "Western"].map((genre) => (
 //                     <label key={genre} className="checkbox-label">
 //                       <input
 //                         type="checkbox"
@@ -372,23 +438,6 @@
 //                 </button>
 //               </div>
 //             </form>
-//           </div>
-//         </div>
-//       )}
-
-//       {/* Delete Confirmation Popup */}
-//       {showDeletePopup && (
-//         <div className="modal-overlay">
-//           <div className="modal-container" style={{ maxWidth: 400, textAlign: 'center', padding: '2rem' }}>
-//             <h3>Are you sure you want to delete this movie?</h3>
-//             <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'center', gap: '1rem' }}>
-//               <button className="submit-btn" onClick={confirmDeleteMovie}>
-//                 Yes, Delete
-//               </button>
-//               <button className="cancel-btn" onClick={cancelDelete}>
-//                 Cancel
-//               </button>
-//             </div>
 //           </div>
 //         </div>
 //       )}
@@ -568,7 +617,7 @@ const ManageMovies = () => {
     window.location.href = '/AdminHome';
   };
 
-  return (
+    return (
     <div className="manage-movies">
       {/* Header */}
       <header className="movies-header">
@@ -678,7 +727,6 @@ const ManageMovies = () => {
           </div>
         </div>
       </main>
-      // ...existing code...
 
       {/* Delete Confirmation Popup */}
       {showDeletePopup && (
@@ -697,7 +745,6 @@ const ManageMovies = () => {
         </div>
       )}
 
-      
       {/* Modal */}
       {showModal && (
         <div className="modal-overlay">
