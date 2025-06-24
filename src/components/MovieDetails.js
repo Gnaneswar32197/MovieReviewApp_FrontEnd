@@ -155,7 +155,7 @@ const MovieDetails = () => {
       </div>
     </header>
     <main className="dashboard-main">
-      <div className="dashboard-container">
+      
         {loading ? (
           <div className="movie-details-container">
             <p>Loading...</p>
@@ -279,7 +279,6 @@ const MovieDetails = () => {
             </div>
           </div>
         )}
-      </div>
     </main>
     <style jsx>{`
       * { margin: 0; padding: 0; box-sizing: border-box; }

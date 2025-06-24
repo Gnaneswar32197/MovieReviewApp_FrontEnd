@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaUser, FaSignOutAlt, FaKey, FaPlay, FaHome, FaStar, FaHeart, FaRegHeart, FaCommentDots, FaSearch, FaFilter, FaEdit } from 'react-icons/fa';
+import { FaUser, FaSignOutAlt, FaKey, FaPlay, FaStar, FaHeart, FaRegHeart, FaCommentDots, FaSearch, FaFilter, FaEdit } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
@@ -343,21 +343,7 @@ const UserHome = () => {
         </div>
       </header>
 
-      {/* Sidebar */}
-      <aside className="sidebar">
-        <button className="sidebar-btn" onClick={() => { setShowProfile(false); setShowChangePassword(false); }}>
-          <FaHome /> Home
-        </button>
-        <button className="sidebar-btn" onClick={() => handleMenu('profile')}>
-          <FaUser /> Profile
-        </button>
-        <button className="sidebar-btn" onClick={() => handleMenu('changePassword')}>
-          <FaKey /> Change Password
-        </button>
-        <button className="sidebar-btn" onClick={handleLogout}>
-          <FaSignOutAlt /> Logout
-        </button>
-      </aside>
+    
 
       {/* Main Content */}
       <main className="dashboard-main">
@@ -783,41 +769,23 @@ const UserHome = () => {
         .menu-icon {
           font-size: 1rem;
         }
-        .sidebar {
-          width: 200px;
-          background: rgba(0,0,0,0.7);
-          padding-top: 100px;
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-          min-height: 100vh;
-          position: fixed;
-          left: 0;
-          top: 0;
-          z-index: 10;
-        }
-        .sidebar-btn {
-          background: none;
-          border: none;
-          color: #fff;
-          font-size: 1.1rem;
-          padding: 1rem 2rem;
-          text-align: left;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          border-radius: 8px;
-          transition: background 0.2s;
-        }
-        .sidebar-btn:hover {
-          background: rgba(255,255,255,0.08);
-        }
+        
+        
         .dashboard-main {
-          flex: 1;
-          margin-left: 200px;
-          padding: 120px 2rem 2rem 2rem;
-        }
+  width: 100vw;
+  padding: 120px 2vw 2rem 2vw; /* 120px top padding for header */
+  box-sizing: border-box;
+}
+@media (max-width: 900px) {
+  .dashboard-main {
+    padding: 110px 1vw 1rem 1vw; /* slightly less for smaller screens */
+  }
+}
+@media (max-width: 600px) {
+  .dashboard-main {
+    padding: 90px 0.5vw 1rem 0.5vw; /* even less for mobile */
+  }
+}
         .dashboard-container {
           max-width: 1200px;
           margin: 0 auto;
