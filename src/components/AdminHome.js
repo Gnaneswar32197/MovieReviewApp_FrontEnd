@@ -144,13 +144,15 @@ const AdminHome = () => {
                   <p>View platform statistics</p>
                 </div>
               </button>
+
               
-              <button className="action-card" onClick={() => handleNavigation('/admin/settings')}>
+              
+              <button className="action-card" onClick={() => handleNavigation('/admin/trending')}>
                 <div className="action-icon">
                   <FaCog />
                 </div>
                 <div className="action-content">
-                  <h4>Settings</h4>
+                  <h4>Manage Trending</h4>
                   <p>Configure platform settings</p>
                 </div>
               </button>

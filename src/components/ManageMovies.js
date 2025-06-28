@@ -443,7 +443,9 @@
 //       )}
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaPlus, FaEdit, FaTrash, FaTimes, FaPlay, FaArrowLeft } from 'react-icons/fa';
+// ...existing code...
+import { FaPlus, FaEdit, FaTrash, FaTimes, FaPlay, FaArrowLeft, FaFire } from 'react-icons/fa';
+// ...existing code...
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
 
@@ -455,6 +457,7 @@ const ManageMovies = () => {
   const [editId, setEditId] = useState(null);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
+  const [trendingMessage, setTrendingMessage] = useState('');
   const [formData, setFormData] = useState({
     title: '',
     director: '',
@@ -613,6 +616,19 @@ const ManageMovies = () => {
     }
   };
 
+const handleToggleTrending = async (movieId) => {
+    try {
+      await axios.put(`${API_BASE_URL}/api/admin/movies/${movieId}/trending`);
+      setTrendingMessage('Added to trending!');
+      fetchMovies();
+      setTimeout(() => setTrendingMessage(''), 2000);
+    } catch (error) {
+      setTrendingMessage('Failed to update trending status.');
+      setTimeout(() => setTrendingMessage(''), 2000);
+      console.error('Error toggling trending:', error);
+    }
+  };
+
   const handleBackToDashboard = () => {
     window.location.href = '/AdminHome';
   };
@@ -620,6 +636,11 @@ const ManageMovies = () => {
     return (
     <div className="manage-movies">
       {/* Header */}
+      {trendingMessage && (
+        <div className="trending-popup">
+          {trendingMessage}
+        </div>
+      )}
       <header className="movies-header">
         <div className="header-content">
           <div className="brand">
@@ -709,15 +730,37 @@ const ManageMovies = () => {
                         </td>
                         <td>{movie.duration} min</td>
                         <td>
-                          <div className="action-buttons">
+                            <div className="action-buttons">
                             <button className="edit-btn" onClick={() => handleEditMovie(movie._id)}>
                               <FaEdit />
                             </button>
                             <button className="delete-btn" onClick={() => handleDeleteMovie(movie._id)}>
                               <FaTrash />
                             </button>
+                            <button
+                              className={`trending-btn${movie.trending ? ' active' : ''}`}
+                              title={movie.trending ? 'Unmark as Trending' : 'Mark as Trending'}
+                              onClick={() => handleToggleTrending(movie._id)}
+                              style={{
+                                background: movie.trending
+                                  ? 'linear-gradient(135deg,rgb(18, 16, 4), #e50914)'
+                                  : 'rgba(255,255,255,0.1)',
+                                color: movie.trending ? '#fff' : '#ffd700',
+                                border: 'none',
+                                borderRadius: '8px',
+                                marginLeft: '6px',
+                                padding: '6px 12px',
+                                cursor: 'pointer',
+                                fontWeight: 700,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '6px'
+                              }}
+                            >
+                              <FaFire />
+                            </button>
                           </div>
-                        </td>
+</td>
                       </tr>
                     ))}
                   </tbody>
@@ -895,6 +938,25 @@ const ManageMovies = () => {
           font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
 
+        .trending-popup {
+          position: fixed;
+          top: 80px;
+          right: 40px;
+          background: linear-gradient(135deg, #ffd700, #e50914);
+          color: #fff;
+          padding: 1rem 2rem;
+          border-radius: 12px;
+          font-weight: bold;
+          font-size: 1.1rem;
+          z-index: 2000;
+          box-shadow: 0 4px 24px rgba(229,9,20,0.15);
+          animation: fadeInPop 0.3s;
+        }
+        @keyframes fadeInPop {
+          from { opacity: 0; transform: translateY(-20px);}
+          to { opacity: 1; transform: translateY(0);}
+        }
+
         .movies-header {
           background: rgba(0, 0, 0, 0.8);
           backdrop-filter: blur(20px);
@@ -977,7 +1039,7 @@ const ManageMovies = () => {
         }
 
         .movies-main {
-          padding: 2rem;
+          padding: 0rem;
         }
 
         .movies-container {

@@ -12,6 +12,7 @@ import MovieDetails from './components/MovieDetails';
 import ManageReviews from './components/ManageReviews';
 import AdminAnalytics from './components/Admin_analytics'; // <-- Corrected path
 // ...existing code...
+import ManageTrending from './components/ManageTrending';
 function App() {
     return (
         <Router>
@@ -26,6 +27,7 @@ function App() {
                 <Route path="/movies/:id" element={<MovieDetails />} />
                 <Route path="/ManageReviews" element={<ManageReviews />} />
                 <Route path="/Admin_analytics" element={<AdminAnalytics />} />
+                <Route path="/admin/trending" element={<ManageTrending />} />
             </Routes>
         </Router>
     );
