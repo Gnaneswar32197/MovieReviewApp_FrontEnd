@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { FaUser, FaSignOutAlt, FaKey, FaPlay, FaStar, FaHeart, FaRegHeart, FaCommentDots, FaSearch, FaFilter, FaEdit } from 'react-icons/fa';
+import React, { useState, useEffect, useRef } from 'react';
+import { FaUser, FaSignOutAlt, FaKey, FaPlay, FaStar, FaHeart, FaRegHeart, FaCommentDots, FaSearch, FaFilter, FaEdit, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
@@ -9,7 +9,6 @@ const UserHome = () => {
   const [user, setUser] = useState({ username: '', email: '' });
   const [showProfile, setShowProfile] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [changePasswordData, setChangePasswordData] = useState({ oldPassword: '', newPassword: '' });
   const [changePasswordMsg, setChangePasswordMsg] = useState('');
   const [reviewModal, setReviewModal] = useState({ open: false, movie: null });
@@ -29,7 +28,7 @@ const UserHome = () => {
   const [editData, setEditData] = useState({ firstName: '', lastName: '', email: '', phone: '' });
   const [showcase, setShowcase] = useState('all');
   const navigate = useNavigate();
-  
+  const scrollRefs = useRef({});
 
   useEffect(() => {
     // Fetch user info
@@ -39,14 +38,11 @@ const UserHome = () => {
     // Fetch movies
     const fetchMovies = async () => {
       try {
-        setLoading(true);
         const res = await fetch(`${API_BASE_URL}/api/movies`);
         const data = await res.json();
         setMovies(data);
       } catch (error) {
         setMovies([]);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -201,14 +197,6 @@ const UserHome = () => {
     }
   };
 
-  // --- Comment Features ---
-  // const openCommentModal = (review) => {
-  //   setCommentModal({ open: true, review });
-  //   setCommentText('');
-  //   setCommentMsg('');
-  // };
-  
-
   const submitComment = async (e) => {
     e.preventDefault();
     setCommentMsg('');
@@ -300,13 +288,24 @@ const UserHome = () => {
     filteredMovies = filteredMovies.sort((a, b) => a.rating - b.rating);
   }
 
-  // Showcase logic
-  let showcaseMovies = filteredMovies;
-  if (showcase === 'favorites') {
-    showcaseMovies = favorites;
-  } else if (showcase === 'watchlist') {
-    showcaseMovies = watchlist;
-  }
+  // Group movies by category
+  const moviesByCategory = {};
+  filteredMovies.forEach(movie => {
+    const category = movie.category || 'Other';
+    if (!moviesByCategory[category]) moviesByCategory[category] = [];
+    moviesByCategory[category].push(movie);
+  });
+
+  const scrollMovies = (category, direction) => {
+    const container = scrollRefs.current[category];
+    if (container) {
+      const scrollAmount = container.offsetWidth * 0.8; // Scroll by 80% of visible width
+      container.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   return (
     <div className="user-dashboard">
@@ -441,21 +440,40 @@ const UserHome = () => {
                 </div>
               )}
               <section className="movies-section">
-                <h3>Movies & Shows</h3>
-                <div className="movies-grid">
-                  {loading ? (
-                    <div className="loading-container">
-                      <div className="loading-spinner"></div>
-                      <p>Loading movies...</p>
+            <h3>Movies & Shows</h3>
+            {Object.keys(moviesByCategory).length === 0 ? (
+              <p>No movies found.</p>
+            ) : (
+              Object.entries(moviesByCategory).map(([category, moviesInCategory]) => (
+                <div key={category} className="category-section">
+                  <div className="category-header">
+                    <h4>{category}</h4>
+                    <div className="scroll-arrows">
+                      <button
+                        className="scroll-arrow"
+                        onClick={() => scrollMovies(category, 'left')}
+                        aria-label="Scroll left"
+                      >
+                        <FaChevronLeft />
+                      </button>
+                      <button
+                        className="scroll-arrow"
+                        onClick={() => scrollMovies(category, 'right')}
+                        aria-label="Scroll right"
+                      >
+                        <FaChevronRight />
+                      </button>
                     </div>
-                  ) : showcaseMovies.length === 0 ? (
-                    <p>No movies found.</p>
-                  ) : (
-                    showcaseMovies.map((movie) => (
+                  </div>
+                  <div
+                    className="movies-row"
+                    ref={el => (scrollRefs.current[category] = el)}
+                    id={`movies-${category}`}
+                  >
+                    {moviesInCategory.map(movie => (
                       <div
                         className="movie-card"
                         key={movie._id}
-                        style={{ cursor: 'pointer' }}
                         onClick={() => navigate(`/movies/${movie._id}`)}
                       >
                         <div className="movie-poster">
@@ -467,16 +485,17 @@ const UserHome = () => {
                         </div>
                         <div className="movie-info">
                           <h4>{movie.title}</h4>
-                          <p>
-                            <strong>Director:</strong> {movie.director}<br />
-                            <strong>Actor:</strong> {movie.actor}<br />
-                            <strong>Actress:</strong> {movie.actress}<br />
-                            <strong>Genre:</strong> {Array.isArray(movie.genres) ? movie.genres.join(', ') : movie.genre}<br />
-                            <strong>Release:</strong> {movie.releaseDate ? new Date(movie.releaseDate).toLocaleDateString() : ''}
-                          </p>
                           <div className="movie-meta">
                             <span className="rating-badge">{movie.rating}/10</span>
                             <span className="duration">{movie.duration} min</span>
+                          </div>
+                          <div className="genre-badges">
+                            {Array.isArray(movie.genres)
+                              ? movie.genres.map(genre => (
+                                  <span key={genre} className="genre-badge">{genre}</span>
+                                ))
+                              : <span className="genre-badge">{movie.genres || movie.genre}</span>
+                            }
                           </div>
                           <div className="movie-actions">
                             <button
@@ -503,10 +522,12 @@ const UserHome = () => {
                           </div>
                         </div>
                       </div>
-                    ))
-                  )}
+                    ))}
+                  </div>
                 </div>
-              </section>
+              ))
+            )}
+          </section>
               {/* Review Modal */}
               {reviewModal.open && (
                 <div className="modal-overlay">
@@ -883,14 +904,22 @@ const UserHome = () => {
           grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
           gap: 2rem;
         }
-        .movie-card {
-          background: rgba(255,255,255,0.05);
-          border: 1px solid rgba(255,255,255,0.1);
+         .movie-card {
+          min-width: 240px;
+          max-width: 240px;
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.12);
           border-radius: 16px;
           overflow: hidden;
-          box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+          box-shadow: 0 4px 16px rgba(0,0,0,0.18);
           display: flex;
           flex-direction: column;
+          cursor: pointer;
+          transition: transform 0.18s, box-shadow 0.18s;
+        }
+        .movie-card:hover {
+          transform: translateY(-6px) scale(1.04);
+          box-shadow: 0 8px 32px rgba(229,9,20,0.18);
         }
         .movie-poster {
           width: 100%;
@@ -904,7 +933,7 @@ const UserHome = () => {
         .movie-poster img {
           width: 100%;
           height: 100%;
-          object-fit: contain;
+          object-fit: cover;
           display: block;
           background: #222;
         }
@@ -913,25 +942,95 @@ const UserHome = () => {
           font-size: 1.2rem;
         }
         .movie-info {
-          padding: 1.2rem;
+          padding: 1.1rem 1rem 1rem 1rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
         }
         .movie-info h4 {
-          margin-bottom: 0.5rem;
-          font-size: 1.2rem;
+          margin: 0 0 0.3rem 0;
+          font-size: 1.1rem;
           font-weight: 700;
+          color: #fff;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
         }
         .movie-meta {
-          margin-top: 1rem;
           display: flex;
-          gap: 1rem;
+          gap: 0.7rem;
+          font-size: 0.98rem;
         }
-        .rating-badge {
+         .rating-badge {
           background: rgba(76, 154, 255, 0.2);
           color: #4c9aff;
           padding: 4px 8px;
           border-radius: 6px;
           font-size: 0.95rem;
           font-weight: 600;
+        }
+        .duration {
+          background: rgba(229, 9, 20, 0.15);
+          color: #e50914;
+          padding: 4px 8px;
+          border-radius: 6px;
+          font-size: 0.95rem;
+          font-weight: 600;
+        }
+        .genre-badges {
+          margin: 0.3rem 0 0.2rem 0;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.3rem;
+        }
+        .genre-badge {
+          background: linear-gradient(135deg, #e50914, #ff6b6b);
+          color: #fff;
+          padding: 4px 12px;
+          border-radius: 20px;
+          font-size: 0.8rem;
+          font-weight: 500;
+          margin-right: 0;
+          display: inline-block;
+        }
+        .movie-actions {
+          display: flex;
+          gap: 0.5rem;
+          margin-top: 0.5rem;
+        }
+        .icon-btn {
+          background: none;
+          border: none;
+          color: #fff;
+          font-size: 1.2rem;
+          cursor: pointer;
+          padding: 6px;
+          border-radius: 50%;
+          transition: background 0.2s;
+        }
+        .icon-btn:hover {
+          background: rgba(255,255,255,0.08);
+        }
+        @media (max-width: 900px) {
+          .movie-card, .movies-row {
+            min-width: 180px;
+            max-width: 180px;
+          }
+          .movie-poster {
+            height: 200px;
+          }
+        }
+        @media (max-width: 600px) {
+          .movie-card, .movies-row {
+            min-width: 140px;
+            max-width: 140px;
+          }
+          .movie-poster {
+            height: 120px;
+          }
+          .movie-info {
+            padding: 0.7rem;
+          }
         }
         .duration {
           background: rgba(229, 9, 20, 0.15);
@@ -1414,6 +1513,63 @@ const UserHome = () => {
             padding: 1.2rem 0.5rem 1rem 0.5rem;
             max-width: 100vw;
           }
+        }
+          .category-section {
+          margin-bottom: 2.5rem;
+        }
+        .category-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 1rem;
+        }
+         .category-header h4 {
+          /* Remove yellow, use red gradient */
+          background: linear-gradient(135deg, #e50914, #ff1744);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          font-size: 1.3rem;
+          font-weight: 700;
+          margin: 0;
+        }
+        .scroll-arrows {
+          display: flex;
+          gap: 0.5rem;
+        }
+        .scroll-arrow {
+          background: linear-gradient(135deg, #1a1a1a 60%, #e50914 100%);
+          border: none;
+          color: #fff;
+          font-size: 1.5rem;
+          border-radius: 50%;
+          width: 38px;
+          height: 38px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: background 0.2s, color 0.2s;
+          box-shadow: 0 2px 8px rgba(229,9,20,0.10);
+        }
+        .scroll-arrow:hover {
+          background: linear-gradient(135deg, #e50914 60%, #1a1a1a 100%);
+          color: #fff;
+        }
+        .movies-row {
+          display: flex;
+          overflow-x: auto;
+          gap: 1.5rem;
+          padding-bottom: 12px;
+          scroll-behavior: smooth;
+        }
+        .movies-row::-webkit-scrollbar {
+          height: 8px;
+          background: transparent;
+        }
+        .movies-row::-webkit-scrollbar-thumb {
+          background: #222;
+          border-radius: 4px;
         }
       `}</style>
     </div>

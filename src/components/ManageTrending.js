@@ -1,47 +1,66 @@
 import React, { useEffect, useState } from 'react';
 import { FaFire, FaCheckCircle } from 'react-icons/fa';
-
+import { useNavigate } from 'react-router-dom';
+import { FaArrowLeft } from 'react-icons/fa';
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
 
 const ManageTrending = () => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actionMsg, setActionMsg] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchAllMovies();
     // eslint-disable-next-line
   }, []);
 
-  const fetchAllMovies = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/all-movies`);
-      const data = await res.json();
-      setMovies(data);
-    } catch {
+  // ...existing code...
+const fetchAllMovies = async () => {
+  setLoading(true);
+  try {
+    const token = localStorage.getItem('token'); // or wherever you store your JWT
+    const res = await fetch(`${API_BASE_URL}/api/admin/all-movies`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (res.status === 401) {
+      setActionMsg('Unauthorized. Please log in again.');
       setMovies([]);
+      setLoading(false);
+      return;
     }
-    setLoading(false);
-  };
+    const data = await res.json();
+    setMovies(data);
+  } catch {
+    setMovies([]);
+  }
+  setLoading(false);
+};
 
-  const toggleTrending = async (movieId) => {
-    setActionMsg('');
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/movies/${movieId}/trending`, {
-        method: 'PUT'
-      });
-      const data = await res.json();
-      if (data.success) {
-        setActionMsg('Trending status updated!');
-        fetchAllMovies();
-      } else {
-        setActionMsg(data.message || 'Failed to update trending status');
-      }
-    } catch {
-      setActionMsg('Failed to update trending status');
+const toggleTrending = async (movieId) => {
+  setActionMsg('');
+  try {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`${API_BASE_URL}/api/admin/movies/${movieId}/trending`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    const data = await res.json();
+    if (data.success) {
+      setActionMsg('Trending status updated!');
+      fetchAllMovies();
+    } else {
+      setActionMsg(data.message || 'Failed to update trending status');
     }
-  };
+  } catch {
+    setActionMsg('Failed to update trending status');
+  }
+};
+// ...existing code...
 
   return (
     <div className="admin-dashboard">
@@ -51,6 +70,12 @@ const ManageTrending = () => {
             <FaFire className="brand-icon" />
             <h1>Manage My Trending Movies</h1>
           </div>
+          <div className="header-buttons">
+                      <button className="back-dashboard-btn" onClick={() => navigate('/AdminHome')}>
+  <FaArrowLeft style={{ marginRight: 8 }} />
+  Back to Dashboard
+</button>
+                    </div>
         </div>
       </header>
       <main className="dashboard-main">
@@ -61,8 +86,11 @@ const ManageTrending = () => {
             {actionMsg && <div className="action-msg">{actionMsg}</div>}
           </div>
           {loading ? (
-            <div className="loading">Loading movies...</div>
-          ) : (
+  <div className="loading-container">
+    <div className="loading-spinner"></div>
+    <p>Loading movies...</p>
+  </div>
+) : (
             <div className="movies-grid">
               {movies.length === 0 ? (
                 <div className="no-movies">No movies found.</div>
@@ -77,26 +105,39 @@ const ManageTrending = () => {
                       )}
                     </div>
                     <div className="movie-info">
-                      <h4>{movie.title}</h4>
-                      <div className="movie-meta">
-                        {movie.category && (
-                          <span className="movie-category">{movie.category}</span>
-                        )}
-                        {movie.genres && (
-                          <span className="movie-genres">
-                            {Array.isArray(movie.genres) ? movie.genres.join(', ') : movie.genres}
-                          </span>
-                        )}
-                      </div>
-                      <button
-                        className={`trending-btn${movie.trending ? ' active' : ''}`}
-                        onClick={() => toggleTrending(movie._id)}
-                      >
-                        <FaFire />
-                        {movie.trending ? 'Trending' : 'Mark as Trending'}
-                        {movie.trending && <FaCheckCircle style={{ marginLeft: 8, color: '#ffd700' }} />}
-                      </button>
-                    </div>
+  <h4>{movie.title}</h4>
+  <div className="movie-meta">
+    {/* ...existing meta... */}
+  </div>
+  <div style={{ marginTop: 8, fontSize: '0.95rem', color: '#ffd700' }}>
+    {movie.trending && movie.trendingSince && (
+      <span>
+        Trending for {Math.floor((Date.now() - new Date(movie.trendingSince)) / (1000 * 60 * 60 * 24))} days
+      </span>
+    )}
+    <span style={{ marginLeft: 12 }}>
+      Trending Count: {movie.trendingCount || 0}
+    </span>
+  </div>
+  {movie.trending ? (
+    <button
+      className="trending-btn active"
+      onClick={() => toggleTrending(movie._id)}
+    >
+      <FaFire />
+      Remove from Trending
+      <FaCheckCircle style={{ marginLeft: 8, color: '#ffd700' }} />
+    </button>
+  ) : (
+    <button
+      className="trending-btn"
+      onClick={() => toggleTrending(movie._id)}
+    >
+      <FaFire />
+      Add to Trending
+    </button>
+      )}
+</div>
                   </div>
                 ))
               )}
@@ -104,7 +145,7 @@ const ManageTrending = () => {
           )}
         </div>
       </main>
-      <style jsx>{`
+      <style>{`
         * { margin: 0; padding: 0; box-sizing: border-box; }
         .admin-dashboard {
           min-height: 100vh;
@@ -301,6 +342,47 @@ const ManageTrending = () => {
             height: 100px;
           }
         }
+          .back-dashboard-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 50px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.back-dashboard-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+  .loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-left: 4px solid #e50914;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
       `}</style>
     </div>
   );
