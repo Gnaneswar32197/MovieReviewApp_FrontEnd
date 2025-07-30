@@ -29,6 +29,7 @@ const UserHome = () => {
   const [showcase, setShowcase] = useState('all');
   const navigate = useNavigate();
   const scrollRefs = useRef({});
+  const [trendingMovies, setTrendingMovies] = useState([]);
 
   useEffect(() => {
     // Fetch user info
@@ -307,6 +308,29 @@ const UserHome = () => {
     }
   };
 
+  // Fetch trending movies
+// ...existing code...
+
+// Fetch trending movies
+const fetchTrendingMovies = async () => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/movies/trending`);
+    const data = await res.json();
+    // If data is not an array, try to extract the array or fallback to []
+    setTrendingMovies(Array.isArray(data) ? data : (Array.isArray(data.data) ? data.data : []));
+  } catch {
+    setTrendingMovies([]);
+  }
+};
+
+// ...existing code...
+
+// In useEffect or wherever you call fetchTrendingMovies, do NOT call it directly in the component body.
+// Instead, use useEffect:
+useEffect(() => {
+  fetchTrendingMovies();
+}, []);
+
   return (
     <div className="user-dashboard">
       {/* Header */}
@@ -441,6 +465,60 @@ const UserHome = () => {
               )}
               <section className="movies-section">
             <h3>Movies & Shows</h3>
+            <section className="trending-section">
+  <h3 style={{
+    background: 'linear-gradient(135deg, #e50914, #ff1744)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    backgroundClip: 'text'
+  }}>🔥 Trending Now</h3>
+  {trendingMovies.length === 0 ? (
+    <p style={{ color: '#aaa' }}>No trending movies right now.</p>
+  ) : (
+    <div className="movies-row" style={{ marginBottom: 32 }}>
+      {trendingMovies.map(movie => (
+        <div
+          className="movie-card"
+          key={movie._id}
+          onClick={() => navigate(`/movies/${movie._id}`)}
+        >
+          <div className="movie-poster">
+            {movie.posterUrl ? (
+              <img src={movie.posterUrl} alt={movie.title} />
+            ) : (
+              <span className="no-image">No Image</span>
+            )}
+          </div>
+          <div className="movie-info">
+            <h4>{movie.title}</h4>
+            <div className="movie-meta">
+              <span className="rating-badge">{movie.rating}/10</span>
+              <span className="duration">{movie.duration} min</span>
+            </div>
+            <div className="genre-badges">
+              {Array.isArray(movie.genres)
+                ? movie.genres.map(genre => (
+                    <span key={genre} className="genre-badge">{genre}</span>
+                  ))
+                : <span className="genre-badge">{movie.genres || movie.genre}</span>
+              }
+            </div>
+            <div style={{ marginTop: 8, fontSize: '0.95rem', color: '#ffd700' }}>
+              {movie.trendingSince && (
+                <span>
+                  Trending for {Math.floor((Date.now() - new Date(movie.trendingSince)) / (1000 * 60 * 60 * 24))} days
+                </span>
+              )}
+              <span style={{ marginLeft: 12 }}>
+                Trending Count: {movie.trendingCount || 0}
+              </span>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )}
+</section>
             {Object.keys(moviesByCategory).length === 0 ? (
               <p>No movies found.</p>
             ) : (
